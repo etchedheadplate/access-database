@@ -1,8 +1,17 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
-app = FastAPI()
+from src.auth.routes import auth_router
+from src.database.connection import create_db, create_tables
 
 
-@app.get("/ping")
-def send_pong():
-    return {"message": "pong"}
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db()
+    await create_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(auth_router)
