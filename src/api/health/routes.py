@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from src.auth.manager import current_active_user
 from src.database.models import User
 
-health_router = APIRouter()
+health_router = APIRouter(tags=["health"])
 
 
 @health_router.post("/ping")
