@@ -12,14 +12,14 @@ engine = create_engine(DATABASE_URL)
 def create_db():
     if not database_exists(engine.url):
         create_database(engine.url)
-        logger.info(f"Database {DB_NAME} created")
+        logger.info(f"Database {DB_NAME} created.")
     else:
-        logger.info(f"Database {DB_NAME} exists")
+        logger.info(f"Database {DB_NAME} exists.")
 
 
 def drop_db():
     if database_exists(engine.url):
         drop_database(engine.url)
-        logger.info(f"Database {DB_NAME} dropped")
+        logger.info(f"Database {DB_NAME} dropped.")
     else:
-        logger.info(f"Database {DB_NAME} doesn't exist")
+        logger.info(f"Database {DB_NAME} doesn't exist.")
