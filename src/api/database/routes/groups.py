@@ -6,7 +6,7 @@ from src.api.database.schemas.groups import GroupCreateResponse, GroupResponse
 from src.api.database.services.groups import GroupService
 from src.database.connection import get_async_session
 
-router = APIRouter(prefix="/groups", tags=["Groups"])
+router = APIRouter(prefix="/groups")
 
 
 @router.get("/", response_model=list[GroupResponse])

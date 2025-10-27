@@ -7,7 +7,7 @@ from src.api.database.schemas.users import UserResponse
 from src.api.database.services.users import UserService
 from src.database.connection import get_async_session
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/users")
 
 
 @router.get("/", response_model=list[UserResponse])

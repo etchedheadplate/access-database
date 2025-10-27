@@ -6,7 +6,7 @@ from src.api.database.schemas.permissions import PermissionCreateResponse, Permi
 from src.api.database.services.permissions import PermissionService
 from src.database.connection import get_async_session
 
-router = APIRouter(prefix="/permissions", tags=["Permissions"])
+router = APIRouter(prefix="/permissions")
 
 
 @router.get("/", response_model=list[PermissionResponse])

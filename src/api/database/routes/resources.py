@@ -6,7 +6,7 @@ from src.api.database.schemas.resources import ResourceCreateResponse, ResourceR
 from src.api.database.services.resources import ResourceService
 from src.database.connection import get_async_session
 
-router = APIRouter(prefix="/resources", tags=["Resources"])
+router = APIRouter(prefix="/resources")
 
 
 @router.get("/", response_model=list[ResourceResponse])
