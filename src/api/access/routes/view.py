@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.management.schemas.view import PermissionsViewResponse, ResourcesViewResponse, UserViewResponse
-from src.api.management.services.view import AccessViewService
+from src.api.access.schemas.view import PermissionsViewResponse, ResourcesViewResponse, UserViewResponse
+from src.api.access.services.view import AccessViewService
 from src.database.connection import get_async_session
 
 router = APIRouter(prefix="/view")

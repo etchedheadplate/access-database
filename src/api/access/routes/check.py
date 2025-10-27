@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.management.services.check import AccessCheckService
+from src.api.access.services.check import AccessCheckService
 from src.database.connection import get_async_session
 
 router = APIRouter(prefix="/check")

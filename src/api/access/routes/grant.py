@@ -4,11 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.management.schemas.add import PermissionGrantResponse, ResourceLinkResponse, UserAddResponse
-from src.api.management.services.add import AccessGrantService
+from src.api.access.schemas.grant import PermissionGrantResponse, ResourceLinkResponse, UserAddResponse
+from src.api.access.services.grant import AccessGrantService
 from src.database.connection import get_async_session
 
-router = APIRouter(prefix="/add", tags=["Management"])
+router = APIRouter(prefix="/grant")
 
 
 @router.post("/user-to-group", response_model=UserAddResponse)

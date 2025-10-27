@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.management.services.remove import AccessRemoveService
+from src.api.access.services.remove import AccessRemoveService
 from src.database.connection import get_async_session
 
 router = APIRouter(prefix="/remove")
