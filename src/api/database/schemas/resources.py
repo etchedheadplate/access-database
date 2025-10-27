@@ -12,9 +12,3 @@ class ResourceResponse(BaseModel):
 class ResourceCreateResponse(BaseModel):
     message: str
     id: PositiveInt
-
-
-class ResourceLinkResponse(BaseModel):
-    message: str
-    resource_id: PositiveInt
-    permission_id: PositiveInt

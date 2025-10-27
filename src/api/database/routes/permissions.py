@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.database.schemas.permissions import PermissionCreateResponse, PermissionLinkResponse, PermissionResponse
+from src.api.database.schemas.permissions import PermissionCreateResponse, PermissionResponse
 from src.api.database.services.permissions import PermissionService
 from src.database.connection import get_async_session
 
@@ -38,18 +38,3 @@ async def get_permission(permission_id: PositiveInt, session: AsyncSession = Dep
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Permission not found")
 
     return permission
-
-
-@router.post("/{permission_id}/link-group", response_model=PermissionLinkResponse)
-async def link_group(
-    permission_id: PositiveInt, group_id: PositiveInt, session: AsyncSession = Depends(get_async_session)
-):
-    service = PermissionService()
-    permission, group, already_linked = await service.link_to_group(session, permission_id, group_id)
-
-    if permission is None or group is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Permission or group not found")
-    if already_linked:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Permission already linked to group")
-
-    return PermissionLinkResponse(message="Permission successfully linked to group", permission_id=permission.id, group_id=group.id)  # type: ignore[arg-type]

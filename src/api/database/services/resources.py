@@ -1,8 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
-from src.database.models import Permission, Resource
+from src.database.models import Resource
 
 
 class ResourceService:
@@ -26,25 +25,3 @@ class ResourceService:
         await db.commit()
         await db.refresh(resource)
         return resource
-
-    @staticmethod
-    async def link_to_permission(db: AsyncSession, resource_id: int, permission_id: int):
-        result_resource = await db.execute(select(Resource).where(Resource.id == resource_id))
-        resource = result_resource.scalars().first()
-
-        result_permission = await db.execute(
-            select(Permission).options(selectinload(Permission.resources)).where(Permission.id == permission_id)
-        )
-        permission = result_permission.scalars().first()
-
-        if not resource or not permission:
-            return None, None, False
-
-        already_linked = resource in permission.resources
-
-        if not already_linked:
-            permission.resources.append(resource)
-            await db.commit()
-            await db.refresh(permission)
-
-        return resource, permission, already_linked

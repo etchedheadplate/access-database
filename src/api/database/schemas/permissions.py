@@ -12,9 +12,3 @@ class PermissionResponse(BaseModel):
 class PermissionCreateResponse(BaseModel):
     message: str
     id: PositiveInt
-
-
-class PermissionLinkResponse(BaseModel):
-    message: str
-    asset_id: PositiveInt
-    group_id: PositiveInt
