@@ -4,7 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.database.schemas.resources import ResourceCreateResponse, ResourceResponse
 from src.api.database.services.resources import ResourceService
+from src.auth.manager import current_active_user
 from src.database.connection import get_async_session
+from src.database.models import User
 
 router = APIRouter(prefix="/resources")
 
@@ -16,7 +18,9 @@ async def list_resources(session: AsyncSession = Depends(get_async_session)):
 
 
 @router.post("/create", response_model=ResourceCreateResponse)
-async def create_resource(name: str, session: AsyncSession = Depends(get_async_session)):
+async def create_resource(
+    name: str, session: AsyncSession = Depends(get_async_session), user: User = Depends(current_active_user)
+):
     service = ResourceService()
     resource = await service.create(session, name)
 

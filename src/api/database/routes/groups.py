@@ -4,7 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.database.schemas.groups import GroupCreateResponse, GroupResponse
 from src.api.database.services.groups import GroupService
+from src.auth.manager import current_active_user
 from src.database.connection import get_async_session
+from src.database.models import User
 
 router = APIRouter(prefix="/groups")
 
@@ -16,7 +18,9 @@ async def list_groups(session: AsyncSession = Depends(get_async_session)):
 
 
 @router.post("/create", response_model=GroupCreateResponse)
-async def create_group(name: str, session: AsyncSession = Depends(get_async_session)):
+async def create_group(
+    name: str, session: AsyncSession = Depends(get_async_session), user: User = Depends(current_active_user)
+):
     service = GroupService()
     group = await service.create(session, name)
 

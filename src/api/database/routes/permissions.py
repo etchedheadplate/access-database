@@ -4,7 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.database.schemas.permissions import PermissionCreateResponse, PermissionResponse
 from src.api.database.services.permissions import PermissionService
+from src.auth.manager import current_active_user
 from src.database.connection import get_async_session
+from src.database.models import User
 
 router = APIRouter(prefix="/permissions")
 
@@ -16,7 +18,9 @@ async def list_permissions(session: AsyncSession = Depends(get_async_session)):
 
 
 @router.post("/create", response_model=PermissionCreateResponse)
-async def create_permission(name: str, session: AsyncSession = Depends(get_async_session)):
+async def create_permission(
+    name: str, session: AsyncSession = Depends(get_async_session), user: User = Depends(current_active_user)
+):
     service = PermissionService()
     permission = await service.create(session, name)
 

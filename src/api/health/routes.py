@@ -11,6 +11,6 @@ async def send_pong():
     return {"message": "pong"}
 
 
-@router.get("/authenticated-route")
-async def authenticated_route(user: User = Depends(current_active_user)):
+@router.get("/auth")
+async def test_auth(user: User = Depends(current_active_user)):
     return {"detail": "Authenticated", "user": user.email}

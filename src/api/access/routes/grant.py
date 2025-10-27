@@ -6,13 +6,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.access.schemas.grant import PermissionGrantResponse, ResourceLinkResponse, UserAddResponse
 from src.api.access.services.grant import AccessGrantService
+from src.auth.manager import current_active_user
 from src.database.connection import get_async_session
+from src.database.models import User
 
 router = APIRouter(prefix="/grant")
 
 
 @router.post("/user-to-group", response_model=UserAddResponse)
-async def add_user_to_group(user_id: UUID, group_id: PositiveInt, session: AsyncSession = Depends(get_async_session)):
+async def add_user_to_group(
+    user_id: UUID,
+    group_id: PositiveInt,
+    session: AsyncSession = Depends(get_async_session),
+    current_user: User = Depends(current_active_user),
+):
     service = AccessGrantService()
     group, user, already_added = await service.add_user_to_group(session, group_id, user_id)
 
@@ -32,7 +39,10 @@ async def add_user_to_group(user_id: UUID, group_id: PositiveInt, session: Async
 
 @router.post("/permission-to-group", response_model=PermissionGrantResponse)
 async def add_permission_to_group(
-    permission_id: PositiveInt, group_id: PositiveInt, session: AsyncSession = Depends(get_async_session)
+    permission_id: PositiveInt,
+    group_id: PositiveInt,
+    session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_active_user),
 ):
     service = AccessGrantService()
     permission, group, already_added = await service.add_permission_to_group(session, permission_id, group_id)
@@ -53,7 +63,10 @@ async def add_permission_to_group(
 
 @router.post("/resource-to-permission", response_model=ResourceLinkResponse)
 async def add_resource_to_permission(
-    resource_id: PositiveInt, permission_id: PositiveInt, session: AsyncSession = Depends(get_async_session)
+    resource_id: PositiveInt,
+    permission_id: PositiveInt,
+    session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_active_user),
 ):
     service = AccessGrantService()
     resource, permission, already_added = await service.add_resource_to_permission(session, resource_id, permission_id)
