@@ -24,7 +24,9 @@ async def add_user_to_group(user_id: UUID, group_id: PositiveInt, session: Async
     return UserAddResponse(
         message="User successfully added to group",
         user_id=user.id,
+        user_email=user.email,
         group_id=group.id,  # type: ignore[arg-type]
+        group_name=group.name,
     )
 
 
@@ -40,7 +42,13 @@ async def grant_permission_to_group(
     if already_granted:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Permission already granted to group")
 
-    return PermissionGrantResponse(message="Permission successfully linked to group", permission_id=permission.id, group_id=group.id)  # type: ignore[arg-type]
+    return PermissionGrantResponse(
+        message="Permission successfully linked to group",
+        permission_id=permission.id,
+        permission_name=permission.name,
+        group_id=group.id,  # type: ignore[arg-type]
+        group_name=group.name,
+    )
 
 
 @router.post("/link-resource", response_model=ResourceLinkResponse)
@@ -58,5 +66,9 @@ async def link_resource_to_permission(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Resource already linked to permission")
 
     return ResourceLinkResponse(
-        message="Resource successfully linked to permission", resource_id=resource.id, permission_id=permission.id  # type: ignore[arg-type]
+        message="Resource successfully linked to permission",
+        resource_id=resource.id,
+        resource_name=resource.name,
+        permission_id=permission.id,  # type: ignore[arg-type]
+        permission_name=permission.name,
     )

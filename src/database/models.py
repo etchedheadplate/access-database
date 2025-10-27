@@ -1,6 +1,6 @@
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTableUUID
 from sqlalchemy import Column, ForeignKey, Integer, String, Table
-from sqlalchemy.orm import DeclarativeBase, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -42,8 +42,8 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
 class Resource(Base):
     __tablename__ = "resources"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
 
     permissions = relationship(
         "Permission",
@@ -55,8 +55,8 @@ class Resource(Base):
 class Permission(Base):
     __tablename__ = "permissions"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
 
     resources = relationship(
         "Resource",
@@ -73,8 +73,8 @@ class Permission(Base):
 class Group(Base):
     __tablename__ = "groups"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
 
     permissions = relationship(
         "Permission",
