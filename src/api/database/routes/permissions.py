@@ -3,7 +3,7 @@ from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.database.schemas.permissions import PermissionCreateResponse, PermissionLinkResponse, PermissionResponse
-from src.api.database.service.permissions import PermissionService
+from src.api.database.services.permissions import PermissionService
 from src.database.connection import get_async_session
 
 router = APIRouter(prefix="/permissions", tags=["Permissions"])

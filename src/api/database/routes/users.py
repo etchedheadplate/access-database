@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.database.schemas.users import UserResponse
-from src.api.database.service.users import UserService
+from src.api.database.services.users import UserService
 from src.database.connection import get_async_session
 
 router = APIRouter(prefix="/users", tags=["Users"])

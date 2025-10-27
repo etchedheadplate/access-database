@@ -3,7 +3,7 @@ from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.database.schemas.resources import ResourceCreateResponse, ResourceLinkResponse, ResourceResponse
-from src.api.database.service.resources import ResourceService
+from src.api.database.services.resources import ResourceService
 from src.database.connection import get_async_session
 
 router = APIRouter(prefix="/resources", tags=["Resources"])

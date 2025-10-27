@@ -5,7 +5,7 @@ from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.database.schemas.groups import GroupAddResponse, GroupCreateResponse, GroupResponse
-from src.api.database.service.groups import GroupService
+from src.api.database.services.groups import GroupService
 from src.database.connection import get_async_session
 
 router = APIRouter(prefix="/groups", tags=["Groups"])
