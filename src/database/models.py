@@ -7,18 +7,18 @@ class Base(DeclarativeBase):
     pass
 
 
-accesses_resources = Table(
-    "accesses_resources",
+permissions_resources = Table(
+    "permissions_resources",
     Base.metadata,
-    Column("access_id", ForeignKey("accesses.id"), primary_key=True),
+    Column("permission_id", ForeignKey("permissions.id"), primary_key=True),
     Column("resource_id", ForeignKey("resources.id"), primary_key=True),
 )
 
-groups_accesses = Table(
-    "groups_accesses",
+groups_permissions = Table(
+    "groups_permissions",
     Base.metadata,
     Column("group_id", ForeignKey("groups.id"), primary_key=True),
-    Column("access_id", ForeignKey("accesses.id"), primary_key=True),
+    Column("permission_id", ForeignKey("permissions.id"), primary_key=True),
 )
 
 user_groups = Table(
@@ -45,28 +45,28 @@ class Resource(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
 
-    accesses = relationship(
-        "Access",
-        secondary=accesses_resources,
+    permissions = relationship(
+        "Permission",
+        secondary=permissions_resources,
         back_populates="resources",
     )
 
 
-class Access(Base):
-    __tablename__ = "accesses"
+class Permission(Base):
+    __tablename__ = "permissions"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
 
     resources = relationship(
         "Resource",
-        secondary=accesses_resources,
-        back_populates="accesses",
+        secondary=permissions_resources,
+        back_populates="permissions",
     )
     groups = relationship(
         "Group",
-        secondary=groups_accesses,
-        back_populates="accesses",
+        secondary=groups_permissions,
+        back_populates="permissions",
     )
 
 
@@ -76,9 +76,9 @@ class Group(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
 
-    accesses = relationship(
-        "Access",
-        secondary=groups_accesses,
+    permissions = relationship(
+        "Permission",
+        secondary=groups_permissions,
         back_populates="groups",
     )
 

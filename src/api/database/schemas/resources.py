@@ -17,4 +17,4 @@ class ResourceCreateResponse(BaseModel):
 class ResourceLinkResponse(BaseModel):
     message: str
     resource_id: PositiveInt
-    access_id: PositiveInt
+    permission_id: PositiveInt

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, PositiveInt
 
 
-class AccessResponse(BaseModel):
+class PermissionResponse(BaseModel):
     id: PositiveInt
     name: str
 
@@ -9,12 +9,12 @@ class AccessResponse(BaseModel):
         from_attributes = True
 
 
-class AccessCreateResponse(BaseModel):
+class PermissionCreateResponse(BaseModel):
     message: str
     id: PositiveInt
 
 
-class AccessLinkResponse(BaseModel):
+class PermissionLinkResponse(BaseModel):
     message: str
-    access_id: PositiveInt
+    asset_id: PositiveInt
     group_id: PositiveInt

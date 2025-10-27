@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from src.database.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
-from src.database.models import Access, Group, Resource, User  # type: ignore[reportAttributeAccessIssue]
+from src.database.models import Asset, Group, Resource, User  # type: ignore[reportAttributeAccessIssue]
 from src.logger import logger
 
 DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
@@ -49,23 +49,23 @@ def seed():
         session.commit()
         logger.info("Data seeded to tables: 'resources'")
 
-        api = Access(name="API", resources=[api_urls, api_keys])
-        databases = Access(name="Databases", resources=[db_users, db_goods, db_sales])
-        deploy = Access(name="Deploy", resources=[ssh_addr, ssh_keys])
-        reports = Access(name="Reports", resources=[report_strategy, report_operations, report_shareholders])
+        api = Asset(name="API", resources=[api_urls, api_keys])
+        databases = Asset(name="Databases", resources=[db_users, db_goods, db_sales])
+        deploy = Asset(name="Deploy", resources=[ssh_addr, ssh_keys])
+        reports = Asset(name="Reports", resources=[report_strategy, report_operations, report_shareholders])
 
         session.add_all([api, databases, deploy, reports])
         session.commit()
-        logger.info("Data seeded to tables: 'accesses', 'accesses_resources'")
+        logger.info("Data seeded to tables: 'permissions', 'permissions_resources'")
 
-        developer = Group(name="Developer", accesses=[api, databases])
-        db_admin = Group(name="DB Admin", accesses=[databases])
-        devops = Group(name="DevOps", accesses=[api, databases, deploy])
-        owner = Group(name="Owner", accesses=[reports])
+        developer = Group(name="Developer", permissions=[api, databases])
+        db_admin = Group(name="DB Admin", permissions=[databases])
+        devops = Group(name="DevOps", permissions=[api, databases, deploy])
+        owner = Group(name="Owner", permissions=[reports])
 
         session.add_all([developer, db_admin, devops, owner])
         session.commit()
-        logger.info("Data seeded to tables: 'groups', 'groups_accesses'")
+        logger.info("Data seeded to tables: 'groups', 'groups_permissions'")
 
         pwd_helper = PasswordHelper()
         hashed_password = pwd_helper.hash("secure")
