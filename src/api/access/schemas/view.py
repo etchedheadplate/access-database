@@ -3,7 +3,7 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr, PositiveInt
 
 
-class UserViewResponse(BaseModel):
+class ViewUserResponse(BaseModel):
     id: UUID
     email: EmailStr
 
@@ -11,11 +11,11 @@ class UserViewResponse(BaseModel):
         from_attributes = True
 
 
-class PermissionsViewResponse(BaseModel):
+class ViewPermissionsResponse(BaseModel):
     id: PositiveInt
     name: str
 
 
-class ResourcesViewResponse(BaseModel):
+class ViewResourcesResponse(BaseModel):
     id: PositiveInt
     name: str
