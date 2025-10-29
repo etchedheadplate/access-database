@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
+from .add import router as grant_router
 from .check import router as check_router
-from .grant import router as grant_router
 from .remove import router as remove_router
 from .view import router as view_router
 
