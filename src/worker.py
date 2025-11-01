@@ -23,18 +23,21 @@ async def process_pair(task_message: dict[str, Any], status_message: dict[str, A
         await task.execute()
         message_out = await status.process(task.is_done, task.result)
         await send_message(EXCHANGE_NAME, ROUTING_KEY_STATUS, message_out.model_dump())
-        logger.info(f"Processed pair for request_id={task.request_id}")
+        logger.info(f"{message_out}")
+        logger.info(f"OUT: request_id={message_out.request_id}, request_status={message_out.request_status}")
+
+
+def is_status_message(msg: dict[str, Any]) -> bool:
+    return "request_status" in msg
+
+
+def is_task_message(msg: dict[str, Any]) -> bool:
+    return "request_type" in msg
 
 
 async def handle_message(message: dict[str, Any], routing_key: str):
-    if routing_key == ROUTING_KEY_TASK:
-        logger.info(
-            f"Message received: routing_key={routing_key},   request_id={message['request_id']}, type={message['request_type']}"
-        )
-    elif routing_key == ROUTING_KEY_STATUS:
-        logger.info(
-            f"Message received: routing_key={routing_key}, request_id={message['request_id']}, status={message['request_status']}"
-        )
+    if routing_key in (ROUTING_KEY_TASK, ROUTING_KEY_STATUS):
+        logger.info(f" IN: request_id={message['request_id']}, routing_key={routing_key}")
 
     request_id = message.get("request_id")
     if not request_id:
@@ -53,6 +56,9 @@ async def handle_message(message: dict[str, Any], routing_key: str):
         if "task" in entry and "status" in entry:
             task_message = entry["task"]
             status_message = entry["status"]
+
+            if is_status_message(task_message) and is_task_message(status_message):
+                task_message, status_message = status_message, task_message
 
             del message_buffer[request_id]
 
