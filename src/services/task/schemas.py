@@ -21,6 +21,7 @@ class AccessPermissionTask(BaseTask):
 class JoinGroupTask(BaseTask):
     request_type: str = "join_group"
     group_id: PositiveInt
+    group_name: str
     user_groups: list[str]
     user_permissions: list[str]
 
