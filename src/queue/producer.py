@@ -30,7 +30,7 @@ class RabbitMQProducer:
             routing_key=routing_key,
         )
 
-        logger.info(f"Message sent to exchange={exchange_name}, routing_key={routing_key}")
+        logger.info(f"OUT: routing_key={routing_key}, exchange={exchange_name}")
 
 
 async def send_message(exchange_name: str, routing_key: str, message: dict[str, Any]):

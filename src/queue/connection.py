@@ -2,8 +2,6 @@ import aio_pika
 from aio_pika.abc import AbstractChannel, AbstractRobustConnection
 from dotenv import load_dotenv
 
-from src.logger import logger
-
 from .config import RABBITMQ_HOST, RABBITMQ_PASSWORD, RABBITMQ_PORT, RABBITMQ_USER, RABBITMQ_VHOST
 
 load_dotenv()
@@ -24,11 +22,11 @@ class RabbitMQConnection:
         self.connection = await aio_pika.connect_robust(url)
         self.channel = await self.connection.channel()
         await self.channel.set_qos(prefetch_count=1)
-        logger.info("Connected to RabbitMQ")
+        # logger.info("Connected to RabbitMQ")
 
     async def close(self):
         if self.channel and not self.channel.is_closed:
             await self.channel.close()
         if self.connection and not self.connection.is_closed:
             await self.connection.close()
-        logger.info("Disconnected from RabbitMQ")
+        # logger.info("Disconnected from RabbitMQ")

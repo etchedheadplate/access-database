@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+SERVICE_NAME = os.getenv("SERVICE_NAME", "Database")
 
 RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
 RABBITMQ_PORT = int(os.getenv("RABBITMQ_PORT", 5672))
