@@ -29,7 +29,7 @@ async def create_group(
 
     return GroupCreateResponse(
         message="Group successfully created",
-        id=group.id,  # type: ignore[arg-type]
+        id=group.id,
     )
 
 

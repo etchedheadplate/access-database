@@ -21,7 +21,7 @@ async def check_if_user_in_group(
 ):
     service = AccessCheckService()
     user_in_group = await service.check_user_in_group(session, user_id, group_id)
-    return {"result": user_in_group}  # type: ignore[arg-type]
+    return {"result": user_in_group}
 
 
 @router.get("/permission-in-group")
@@ -33,7 +33,7 @@ async def check_if_permission_in_group(
 ):
     service = AccessCheckService()
     permission_in_group = await service.check_permission_in_group(session, permission_id, group_id)
-    return {"result": permission_in_group}  # type: ignore[arg-type]
+    return {"result": permission_in_group}
 
 
 @router.get("/resource-in-permission")
@@ -45,4 +45,4 @@ async def check_if_resource_in_permission(
 ):
     service = AccessCheckService()
     resource_in_permission = await service.check_resource_in_permission(session, resource_id, permission_id)
-    return {"result": resource_in_permission}  # type: ignore[arg-type]
+    return {"result": resource_in_permission}

@@ -29,7 +29,7 @@ async def create_resource(
 
     return ResourceCreateResponse(
         message="Resource successfully created",
-        id=resource.id,  # type: ignore[arg-type]
+        id=resource.id,
     )
 
 

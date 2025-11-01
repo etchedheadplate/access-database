@@ -29,7 +29,7 @@ async def create_permission(
 
     return PermissionCreateResponse(
         message="Permission successfully created",
-        id=permission.id,  # type: ignore[arg-type]
+        id=permission.id,
     )
 
 
