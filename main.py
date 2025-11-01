@@ -7,6 +7,7 @@ from src.api.access.routes import router as access_router
 from src.api.auth.routes import router as auth_router
 from src.api.database.routes import router as database_router
 from src.api.health.routes import router as health_router
+from src.logger import logger
 from src.queue import (
     EXCHANGE_NAME,
     ROUTING_KEY_STATUS,
@@ -25,6 +26,7 @@ consumer = RabbitMQConsumer(rabbit_connection)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await rabbit_connection.connect()
+    logger.info("Connected to RabbitMQ")
 
     asyncio.create_task(
         consumer.consume(EXCHANGE_NAME, ROUTING_KEY_TASK, lambda msg: handle_message(msg, ROUTING_KEY_TASK))
@@ -36,6 +38,7 @@ async def lifespan(app: FastAPI):
     yield
 
     await rabbit_connection.close()
+    logger.info("Disconnected from RabbitMQ")
 
 
 app = FastAPI(lifespan=lifespan)
