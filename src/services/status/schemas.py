@@ -29,3 +29,7 @@ class StatusDoneResponse(BaseStatus):
 
 class StatusUnprocessableResponse(BaseStatus):
     request_status: str = "unprocessable"
+
+
+class StatusNotFoundResponse(BaseStatus):
+    request_status: str = "not_found"
