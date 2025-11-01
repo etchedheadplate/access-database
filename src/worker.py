@@ -4,7 +4,8 @@ from typing import Any
 from src.logger import logger
 from src.queue import (
     EXCHANGE_NAME,
-    ROUTING_KEY_STATUS,
+    ROUTING_KEY_STATUS_DONE,
+    ROUTING_KEY_STATUS_VALIDATED,
     ROUTING_KEY_TASK,
     send_message,
 )
@@ -22,7 +23,7 @@ async def process_pair(task_message: dict[str, Any], status_message: dict[str, A
     if status.is_appropriate and status.request_id == task.request_id:
         await task.execute()
         message_out = await status.process(task.is_done, task.result)
-        await send_message(EXCHANGE_NAME, ROUTING_KEY_STATUS, message_out.model_dump())
+        await send_message(EXCHANGE_NAME, ROUTING_KEY_STATUS_DONE, message_out.model_dump())
         logger.info(f"{message_out}")
         logger.info(f"OUT: request_id={message_out.request_id}, request_status={message_out.request_status}")
 
@@ -36,7 +37,7 @@ def is_task_message(msg: dict[str, Any]) -> bool:
 
 
 async def handle_message(message: dict[str, Any], routing_key: str):
-    if routing_key in (ROUTING_KEY_TASK, ROUTING_KEY_STATUS):
+    if routing_key in (ROUTING_KEY_TASK, ROUTING_KEY_STATUS_VALIDATED):
         logger.info(f" IN: request_id={message['request_id']}, routing_key={routing_key}")
 
     request_id = message.get("request_id")
@@ -49,7 +50,7 @@ async def handle_message(message: dict[str, Any], routing_key: str):
 
         if routing_key == ROUTING_KEY_TASK:
             message_buffer[request_id]["task"] = message
-        elif routing_key == ROUTING_KEY_STATUS:
+        elif routing_key == ROUTING_KEY_STATUS_VALIDATED:
             message_buffer[request_id]["status"] = message
 
         entry = message_buffer[request_id]
