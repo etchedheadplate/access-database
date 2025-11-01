@@ -24,7 +24,6 @@ async def process_pair(task_message: dict[str, Any], status_message: dict[str, A
         await task.execute()
         message_out = await status.process(task.is_done, task.result)
         await send_message(EXCHANGE_NAME, ROUTING_KEY_STATUS_DONE, message_out.model_dump())
-        logger.info(f"{message_out}")
         logger.info(f"OUT: request_id={message_out.request_id}, request_status={message_out.request_status}")
 
 
