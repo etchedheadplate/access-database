@@ -27,7 +27,15 @@ async def process_pair(task_message: dict[str, Any], status_message: dict[str, A
 
 
 async def handle_message(message: dict[str, Any], routing_key: str):
-    logger.info(f"Message received: request_id={message['request_id']}, routing_key={routing_key}")
+    if routing_key == ROUTING_KEY_TASK:
+        logger.info(
+            f"Message received: routing_key={routing_key},   request_id={message['request_id']}, type={message['request_type']}"
+        )
+    elif routing_key == ROUTING_KEY_STATUS:
+        logger.info(
+            f"Message received: routing_key={routing_key}, request_id={message['request_id']}, status={message['request_status']}"
+        )
+
     request_id = message.get("request_id")
     if not request_id:
         return
