@@ -21,11 +21,32 @@ groups_permissions = Table(
     Column("permission_id", ForeignKey("permissions.id"), primary_key=True),
 )
 
+groups_resources = Table(
+    "groups_resources",
+    Base.metadata,
+    Column("group_id", ForeignKey("groups.id"), primary_key=True),
+    Column("resource_id", ForeignKey("resources.id"), primary_key=True),
+)
+
 user_groups = Table(
     "users_groups",
     Base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("group_id", ForeignKey("groups.id"), primary_key=True),
+)
+
+user_permissions = Table(
+    "users_permissions",
+    Base.metadata,
+    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    Column("permission_id", ForeignKey("permissions.id"), primary_key=True),
+)
+
+user_resources = Table(
+    "users_resources",
+    Base.metadata,
+    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    Column("resource_id", ForeignKey("resources.id"), primary_key=True),
 )
 
 
@@ -35,6 +56,18 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     groups = relationship(
         "Group",
         secondary=user_groups,
+        back_populates="users",
+    )
+
+    permissions = relationship(
+        "Permission",
+        secondary=user_permissions,
+        back_populates="users",
+    )
+
+    resources = relationship(
+        "Resource",
+        secondary=user_resources,
         back_populates="users",
     )
 
@@ -51,6 +84,18 @@ class Resource(Base):
         back_populates="resources",
     )
 
+    users = relationship(
+        "User",
+        secondary=user_resources,
+        back_populates="resources",
+    )
+
+    groups = relationship(
+        "Group",
+        secondary=groups_resources,
+        back_populates="resources",
+    )
+
 
 class Permission(Base):
     __tablename__ = "permissions"
@@ -63,9 +108,16 @@ class Permission(Base):
         secondary=permissions_resources,
         back_populates="permissions",
     )
+
     groups = relationship(
         "Group",
         secondary=groups_permissions,
+        back_populates="permissions",
+    )
+
+    users = relationship(
+        "User",
+        secondary=user_permissions,
         back_populates="permissions",
     )
 
@@ -85,5 +137,11 @@ class Group(Base):
     users = relationship(
         "User",
         secondary=user_groups,
+        back_populates="groups",
+    )
+
+    resources = relationship(
+        "Resource",
+        secondary=groups_resources,
         back_populates="groups",
     )
