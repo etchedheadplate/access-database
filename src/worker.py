@@ -5,8 +5,8 @@ from src.logger import logger
 from src.queue import (
     EXCHANGE_NAME,
     ROUTING_KEY_STATUS_DONE,
-    ROUTING_KEY_STATUS_VALIDATED,
     ROUTING_KEY_STATUS_UNPROCESSABLE,
+    ROUTING_KEY_STATUS_VALIDATED,
     ROUTING_KEY_TASK,
     send_message,
 )
