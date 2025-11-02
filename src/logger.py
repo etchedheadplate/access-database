@@ -26,7 +26,8 @@ handler = logging.StreamHandler()
 formatter = logging.Formatter("[%(levelname)s] %(asctime)s - %(message)s")
 handler.setFormatter(formatter)
 
-handler.addFilter(PrefixFilter(SERVICE_NAME))
+# Turned of so service name won't be doubled in Docker
+# handler.addFilter(PrefixFilter(SERVICE_NAME))
 
 logger.addHandler(handler)
 
