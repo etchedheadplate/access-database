@@ -6,6 +6,7 @@ from src.queue import (
     EXCHANGE_NAME,
     ROUTING_KEY_STATUS_DONE,
     ROUTING_KEY_STATUS_VALIDATED,
+    ROUTING_KEY_STATUS_UNPROCESSABLE,
     ROUTING_KEY_TASK,
     send_message,
 )
@@ -23,8 +24,9 @@ async def process_pair(task_message: dict[str, Any], status_message: dict[str, A
     if status.is_appropriate and status.request_id == task.request_id:
         await task.execute()
         message_out = await status.process(task.is_done, task.result)
-        await send_message(EXCHANGE_NAME, ROUTING_KEY_STATUS_DONE, message_out.model_dump())
-        logger.info(f"OUT: request_id={message_out.request_id}, request_status={message_out.request_status}")
+        routing_key = ROUTING_KEY_STATUS_DONE if task.is_done else ROUTING_KEY_STATUS_UNPROCESSABLE
+        await send_message(EXCHANGE_NAME, routing_key, message_out.model_dump())
+        logger.info(f"OUT: request_id={message_out.request_id}, request_status={routing_key}")
 
 
 def is_status_message(msg: dict[str, Any]) -> bool:

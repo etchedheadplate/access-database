@@ -4,10 +4,13 @@ from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin, models
 from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
 
 from src.auth.config import JWT_SECRET
-from src.database.connection import get_user_db
-from src.database.models import User
+from src.database.connection import async_session_maker, get_user_db
+from src.database.models import Group, User
 from src.logger import logger
 
 
@@ -16,7 +19,30 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     verification_token_secret = str(JWT_SECRET)
 
     async def on_after_register(self, user: User, request: Request | None = None):
-        logger.info(f"User {user.id} has registered.")
+        async with async_session_maker() as session:
+            stmt_group = select(Group).where(Group.name == "Developer")
+            developer_group: Group | None = await session.scalar(stmt_group)
+
+            if developer_group is None:
+                developer_group = Group(name="Developer")
+                session.add(developer_group)
+                try:
+                    await session.commit()
+                except IntegrityError:
+                    await session.rollback()
+                    developer_group = await session.scalar(stmt_group)
+                await session.refresh(developer_group)
+
+            stmt_user = select(User).options(selectinload(User.groups)).where(User.id == user.id)  # type: ignore
+            db_user: User | None = await session.scalar(stmt_user)
+            if db_user is None:
+                logger.error(f"User {user.id} not found after registration.")
+                return
+
+            db_user.groups.append(developer_group)
+            await session.commit()
+
+        logger.info(f"User {user.id} added to Developer group.")
 
     async def on_after_forgot_password(self, user: User, token: str, request: Request | None = None):
         logger.info(f"User {user.id} has forgot their password. Reset token: {token}")
