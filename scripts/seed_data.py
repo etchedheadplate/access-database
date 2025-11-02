@@ -2,16 +2,11 @@ from uuid import uuid4
 
 from fastapi_users.password import PasswordHelper
 from sqlalchemy import create_engine
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import sessionmaker
 
 from src.database.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
-from src.database.models import (
-    Base,
-    Group,
-    Permission,
-    Resource,
-    User,
-)
+from src.database.models import Base, Group, Permission, Resource, User
 from src.logger import logger
 
 DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
@@ -25,136 +20,103 @@ def seed():
     session = SessionLocal()
 
     try:
-        api_urls = Resource(name="API URLs")
-        api_keys = Resource(name="API keys")
+        resource_names = [
+            "API URLs",
+            "API keys",
+            "Database Users",
+            "Database Goods",
+            "Database Sales",
+            "SSH address",
+            "SSH keys",
+            "Report on Strategy",
+            "Report on Operations",
+            "Report for Shareholders",
+        ]
 
-        db_users = Resource(name="Database Users")
-        db_goods = Resource(name="Database Goods")
-        db_sales = Resource(name="Database Sales")
-
-        ssh_addr = Resource(name="SSH address")
-        ssh_keys = Resource(name="SSH keys")
-
-        report_strategy = Resource(name="Report on Strategy")
-        report_operations = Resource(name="Report on Operations")
-        report_shareholders = Resource(name="Report for Shareholders")
-
-        session.add_all(
-            [
-                api_urls,
-                api_keys,
-                db_users,
-                db_goods,
-                db_sales,
-                ssh_addr,
-                ssh_keys,
-                report_strategy,
-                report_operations,
-                report_shareholders,
-            ]
-        )
+        resources_dict = {}
+        for name in resource_names:
+            stmt = insert(Resource).values(name=name).on_conflict_do_nothing(index_elements=["name"])
+            session.execute(stmt)
         session.commit()
-        logger.info("Resources added")
 
-        perm_api = Permission(name="API Access", resources=[api_urls, api_keys])
-        perm_db = Permission(name="Database Access", resources=[db_users, db_goods, db_sales])
-        perm_deploy = Permission(name="Deploy Access", resources=[ssh_addr, ssh_keys])
-        perm_reports = Permission(
-            name="Report Access", resources=[report_strategy, report_operations, report_shareholders]
-        )
+        for name in resource_names:
+            resources_dict[name] = session.query(Resource).filter_by(name=name).first()
 
-        session.add_all([perm_api, perm_db, perm_deploy, perm_reports])
+        logger.info("Resources added or verified")
+
+        permissions_data = [
+            ("API Access", ["API URLs", "API keys"]),
+            ("Database Access", ["Database Users", "Database Goods", "Database Sales"]),
+            ("Deploy Access", ["SSH address", "SSH keys"]),
+            ("Report Access", ["Report on Strategy", "Report on Operations", "Report for Shareholders"]),
+        ]
+
+        permissions_dict = {}
+        for perm_name, res_names in permissions_data:
+            perm = session.query(Permission).filter_by(name=perm_name).first()
+            if not perm:
+                perm = Permission(name=perm_name, resources=[resources_dict[r] for r in res_names])
+                session.add(perm)
+            permissions_dict[perm_name] = perm
         session.commit()
-        logger.info("Permissions added")
+        logger.info("Permissions added or verified")
 
-        developer = Group(
-            name="Developer",
-            permissions=[perm_api, perm_db],
-            resources=[api_urls, db_goods],
-        )
-        db_admin = Group(
-            name="DB Admin",
-            permissions=[perm_db],
-            resources=[db_users, db_sales],
-        )
-        devops = Group(
-            name="DevOps",
-            permissions=[perm_api, perm_db, perm_deploy],
-            resources=[ssh_addr],
-        )
-        owner = Group(
-            name="Owner",
-            permissions=[perm_reports],
-            resources=[report_strategy, report_shareholders],
-        )
+        groups_data = [
+            ("Developer", ["API Access", "Database Access"], ["API URLs", "Database Goods"]),
+            ("DB Admin", ["Database Access"], ["Database Users", "Database Sales"]),
+            ("DevOps", ["API Access", "Database Access", "Deploy Access"], ["SSH address"]),
+            ("Owner", ["Report Access"], ["Report on Strategy", "Report for Shareholders"]),
+        ]
 
-        session.add_all([developer, db_admin, devops, owner])
+        groups_dict = {}
+        for group_name, perm_names, res_names in groups_data:
+            group = session.query(Group).filter_by(name=group_name).first()
+            if not group:
+                group = Group(
+                    name=group_name,
+                    permissions=[permissions_dict[p] for p in perm_names],
+                    resources=[resources_dict[r] for r in res_names],
+                )
+                session.add(group)
+            groups_dict[group_name] = group
         session.commit()
+        logger.info("Groups added or verified")
 
         pwd_helper = PasswordHelper()
         hashed_password = pwd_helper.hash("secure")
 
         users_data = [
-            {
-                "email": "alice@example.com",
-                "groups": [developer],
-                "permissions": [perm_api],
-                "resources": [api_urls],
-            },
-            {
-                "email": "bob@example.com",
-                "groups": [developer],
-                "permissions": [perm_api, perm_db],
-                "resources": [api_keys, db_goods],
-            },
-            {
-                "email": "charlie@example.com",
-                "groups": [db_admin],
-                "permissions": [perm_db],
-                "resources": [db_users, db_sales],
-            },
-            {
-                "email": "david@example.com",
-                "groups": [devops],
-                "permissions": [perm_deploy],
-                "resources": [ssh_addr],
-            },
-            {
-                "email": "eve@example.com",
-                "groups": [owner],
-                "permissions": [perm_reports],
-                "resources": [report_shareholders],
-            },
-            {
-                "email": "frank@example.com",
-                "groups": [developer, devops],
-                "permissions": [perm_api, perm_deploy],
-                "resources": [api_urls, ssh_keys],
-            },
+            ("alice@example.com", ["Developer"], ["API Access"], ["API URLs"]),
+            ("bob@example.com", ["Developer"], ["API Access", "Database Access"], ["API keys", "Database Goods"]),
+            ("charlie@example.com", ["DB Admin"], ["Database Access"], ["Database Users", "Database Sales"]),
+            ("david@example.com", ["DevOps"], ["Deploy Access"], ["SSH address"]),
+            ("eve@example.com", ["Owner"], ["Report Access"], ["Report for Shareholders"]),
+            ("frank@example.com", ["Developer", "DevOps"], ["API Access", "Deploy Access"], ["API URLs", "SSH keys"]),
         ]
 
-        for data in users_data:
-            user = User(
-                id=uuid4(),
-                email=data["email"],
-                hashed_password=hashed_password,
-                is_active=True,
-                is_superuser=False,
-                is_verified=True,
-                groups=data["groups"],
-                permissions=data["permissions"],
-                resources=data["resources"],
-            )
-            session.add(user)
-
+        for email, group_names, perm_names, res_names in users_data:
+            user = session.query(User).filter_by(email=email).first()
+            if not user:
+                user = User(
+                    id=uuid4(),
+                    email=email,
+                    hashed_password=hashed_password,
+                    is_active=True,
+                    is_superuser=False,
+                    is_verified=True,
+                    groups=[groups_dict[g] for g in group_names],
+                    permissions=[permissions_dict[p] for p in perm_names],
+                    resources=[resources_dict[r] for r in res_names],
+                )
+                session.add(user)
         session.commit()
-        logger.info("Users added")
+        logger.info("Users added or verified")
 
         logger.info("All data seeded successfully")
 
     except Exception as e:
         session.rollback()
-        logger.exception(f"❌ Error seeding data: {e}")
+        logger.exception(f"Error seeding data: {e}")
     finally:
         session.close()
 
