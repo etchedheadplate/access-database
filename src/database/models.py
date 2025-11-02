@@ -1,5 +1,5 @@
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTableUUID
-from sqlalchemy import Column, ForeignKey, Integer, String, Table
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -52,6 +52,8 @@ user_resources = Table(
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
     __tablename__ = "users"
+
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)  # type: ignore[override]
 
     groups = relationship(
         "Group",
