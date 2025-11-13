@@ -3,7 +3,7 @@ from typing import Any
 
 import aio_pika
 
-from .connection import RabbitMQConnection
+from src.queue.connection import RabbitMQConnection
 
 
 class RabbitMQProducer:

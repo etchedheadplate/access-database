@@ -6,8 +6,7 @@ import aio_pika
 
 from src.config import Settings
 from src.logger import logger
-
-from .connection import RabbitMQConnection
+from src.queue.connection import RabbitMQConnection
 
 
 class RabbitMQConsumer:

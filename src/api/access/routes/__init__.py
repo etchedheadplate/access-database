@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-from .add import router as grant_router
-from .check import router as check_router
-from .remove import router as remove_router
-from .view import router as view_router
+from src.api.access.routes.add import router as grant_router
+from src.api.access.routes.check import router as check_router
+from src.api.access.routes.remove import router as remove_router
+from src.api.access.routes.view import router as view_router
 
 router = APIRouter()
 router.include_router(grant_router)
