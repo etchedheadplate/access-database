@@ -27,13 +27,3 @@ class RabbitMQProducer:
             aio_pika.Message(body=body, delivery_mode=aio_pika.DeliveryMode.PERSISTENT),
             routing_key=routing_key,
         )
-
-
-async def send_message(exchange_name: str, routing_key: str, message: dict[str, Any]):
-    connection = RabbitMQConnection()
-    await connection.connect()
-
-    producer = RabbitMQProducer(connection)
-    await producer.send_message(exchange_name=exchange_name, routing_key=routing_key, message=message)
-
-    await connection.close()
