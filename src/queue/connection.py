@@ -14,15 +14,15 @@ class RabbitMQConnection:
         self.vhost = settings.RABBITMQ_VHOST
         self.url = f"amqp://{self.user}:{self.password}@{self.host}:{self.port}/{self.vhost}"
         self.__connection: AbstractRobustConnection | None = None
-        self.__channel: AbstractChannel | None = None
+        self.channel: AbstractChannel | None = None
 
     async def connect(self):
         self.__connection = await aio_pika.connect_robust(self.url)
-        self.__channel = await self.__connection.channel()
-        await self.__channel.set_qos(prefetch_count=1)
+        self.channel = await self.__connection.channel()
+        await self.channel.set_qos(prefetch_count=1)
 
     async def close(self):
-        if self.__channel and not self.__channel.is_closed:
-            await self.__channel.close()
+        if self.channel and not self.channel.is_closed:
+            await self.channel.close()
         if self.__connection and not self.__connection.is_closed:
             await self.__connection.close()
