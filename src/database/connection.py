@@ -6,11 +6,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy_utils import create_database, database_exists  # type: ignore
 
-from src.database.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
+from src.config import Settings
 from src.database.models import Base, User
 from src.logger import logger
 
-SYNC_DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+settings = Settings()  # type: ignore[call-arg]
+
+SYNC_DATABASE_URL = f"postgresql+psycopg2://{settings.DB_USER}:{settings.DB_PASS}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 
 engine = create_engine(SYNC_DATABASE_URL)
 
@@ -18,12 +20,12 @@ engine = create_engine(SYNC_DATABASE_URL)
 def create_db():
     if not database_exists(engine.url):
         create_database(engine.url)
-        logger.info(f"Database {DB_NAME} created.")
+        logger.info(f"Database {settings.DB_NAME} created.")
     else:
-        logger.info(f"Database {DB_NAME} exists.")
+        logger.info(f"Database {settings.DB_NAME} exists.")
 
 
-ASYNC_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+ASYNC_DATABASE_URL = f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASS}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 
 async_engine = create_async_engine(ASYNC_DATABASE_URL)
 async_session_maker = async_sessionmaker(async_engine, expire_on_commit=False)
@@ -40,4 +42,4 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
-    yield SQLAlchemyUserDatabase(session, User)
+    yield SQLAlchemyUserDatabase(session, User)  # type: ignore[arg-type]

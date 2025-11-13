@@ -8,15 +8,17 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 
-from src.auth.config import JWT_SECRET
+from src.config import Settings
 from src.database.connection import async_session_maker, get_user_db
 from src.database.models import Group, User
 from src.logger import logger
 
+settings = Settings()  # type: ignore[call-arg]
 
-class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
-    reset_password_token_secret = str(JWT_SECRET)
-    verification_token_secret = str(JWT_SECRET)
+
+class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):  # type: ignore[arg-type]
+    reset_password_token_secret = settings.JWT_SECRET
+    verification_token_secret = settings.JWT_SECRET
 
     async def on_after_register(self, user: User, request: Request | None = None):
         async with async_session_maker() as session:
@@ -51,7 +53,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         logger.info(f"Verification requested for user {user.id}. Verification token: {token}")
 
 
-async def get_user_manager(user_db: SQLAlchemyUserDatabase[User, uuid.UUID] = Depends(get_user_db)):
+async def get_user_manager(user_db: SQLAlchemyUserDatabase[User, uuid.UUID] = Depends(get_user_db)):  # type: ignore[arg-type]
     yield UserManager(user_db)
 
 
@@ -59,7 +61,7 @@ bearer_transport = BearerTransport(tokenUrl="auth/login")
 
 
 def get_jwt_strategy() -> JWTStrategy[models.UP, models.ID]:  # type: ignore[arg-type]
-    return JWTStrategy(secret=str(JWT_SECRET), lifetime_seconds=3600)
+    return JWTStrategy(secret=settings.JWT_SECRET, lifetime_seconds=3600)
 
 
 auth_backend = AuthenticationBackend(

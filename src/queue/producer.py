@@ -3,8 +3,6 @@ from typing import Any
 
 import aio_pika
 
-from src.logger import logger
-
 from .connection import RabbitMQConnection
 
 
@@ -29,8 +27,6 @@ class RabbitMQProducer:
             aio_pika.Message(body=body, delivery_mode=aio_pika.DeliveryMode.PERSISTENT),
             routing_key=routing_key,
         )
-
-        logger.info(f"OUT: routing_key={routing_key}, exchange={exchange_name}")
 
 
 async def send_message(exchange_name: str, routing_key: str, message: dict[str, Any]):

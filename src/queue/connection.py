@@ -1,19 +1,17 @@
 import aio_pika
 from aio_pika.abc import AbstractChannel, AbstractRobustConnection
-from dotenv import load_dotenv
 
-from .config import RABBITMQ_HOST, RABBITMQ_PASSWORD, RABBITMQ_PORT, RABBITMQ_USER, RABBITMQ_VHOST
-
-load_dotenv()
+from src.config import Settings
 
 
 class RabbitMQConnection:
     def __init__(self):
-        self.host = RABBITMQ_HOST
-        self.port = RABBITMQ_PORT
-        self.user = RABBITMQ_USER
-        self.password = RABBITMQ_PASSWORD
-        self.vhost = RABBITMQ_VHOST
+        settings = Settings()  # type: ignore[call-arg]
+        self.host = settings.RABBITMQ_HOST
+        self.port = settings.RABBITMQ_PORT
+        self.user = settings.RABBITMQ_USER
+        self.password = settings.RABBITMQ_PASSWORD
+        self.vhost = settings.RABBITMQ_VHOST
         self.connection: AbstractRobustConnection | None = None
         self.channel: AbstractChannel | None = None
 
