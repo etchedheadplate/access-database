@@ -1,12 +1,8 @@
 import logging
-import os
 
-from dotenv import load_dotenv
+from src.config import Settings
 
-load_dotenv()
-
-
-SERVICE_NAME = os.getenv("SERVICE_NAME", "Database")
+settings = Settings()  # type: ignore[call-arg]
 
 
 class PrefixFilter(logging.Filter):
@@ -27,7 +23,7 @@ formatter = logging.Formatter("[%(levelname)s] %(asctime)s - %(message)s")
 handler.setFormatter(formatter)
 
 # Turned of so service name won't be doubled in Docker
-# handler.addFilter(PrefixFilter(SERVICE_NAME))
+# handler.addFilter(PrefixFilter(settings.SERVICE_NAME))
 
 logger.addHandler(handler)
 
