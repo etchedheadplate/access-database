@@ -5,11 +5,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import sessionmaker
 
-from src.database.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
+from src.config import Settings
 from src.database.models import Base, Group, Permission, Resource, User
 from src.logger import logger
 
-DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+settings = Settings()  # type: ignore[call-arg]
+
+DATABASE_URL = f"postgresql+psycopg2://{settings.DB_USER}:{settings.DB_PASS}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)

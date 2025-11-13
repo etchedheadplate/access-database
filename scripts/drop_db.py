@@ -1,10 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, drop_database  # type: ignore
 
-from src.database.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
+from src.config import Settings
 from src.logger import logger
 
-DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+settings = Settings()  # type: ignore[call-arg]
+
+DATABASE_URL = f"postgresql+psycopg2://{settings.DB_USER}:{settings.DB_PASS}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 
 engine = create_engine(DATABASE_URL)
 
@@ -12,9 +14,9 @@ engine = create_engine(DATABASE_URL)
 def drop_db():
     if database_exists(engine.url):
         drop_database(engine.url)
-        logger.info(f"Database {DB_NAME} dropped")
+        logger.info(f"Database {settings.DB_NAME} dropped")
     else:
-        logger.info(f"Database {DB_NAME} doesn't exist")
+        logger.info(f"Database {settings.DB_NAME} doesn't exist")
 
 
 if __name__ == "__main__":
